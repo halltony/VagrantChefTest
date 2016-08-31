@@ -26,18 +26,29 @@ Vagrant.configure(2) do |config|
   # config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.network "forwarded_port", guest: 8081, host: 8081,
       auto_correct: true
-  config.vm.provision "shell", inline: <<-SHELL
-    sudo add-apt-repository -y ppa:webupd8team/java
-    sudo apt-get update
-    sudo apt-get -y upgrade
-    echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
-    echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-    sudo apt-get -y install oracle-java8-installer
-  SHELL
+  # config.vm.provision "shell", inline: <<-SHELL
+  #     sudo add-apt-repository -y ppa:webupd8team/java
+  #     sudo apt-get update
+  #     sudo apt-get -y upgrade
+  #     echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+  #     echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+  #     sudo apt-get -y install oracle-java8-installer
+  #   SHELL
   config.berkshelf.enabled = true
+  # config.berkshelf.berksfile_path = "./cookbooks/java/Berksfile"
   config.berkshelf.berksfile_path = "./cookbooks/chefnexus/Berksfile"
   config.vm.provision :chef_solo do |chef|
+    chef.json = {
+      "java" => {
+        "install_flavor" => "oracle",
+        "jdk_version" => "8",
+        "oracle" => {
+          "accept_oracle_download_terms" => true
+        }
+      }
+    }
     chef.run_list = [
+      'recipe[java]',
       'recipe[nexus3]'
     ]
   end

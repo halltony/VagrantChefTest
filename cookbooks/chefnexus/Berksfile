@@ -2,3 +2,4 @@ source "https://supermarket.chef.io"
 
 metadata
 cookbook 'nexus3', '~> 0.3.0'
+cookbook 'java', '~> 1.42.0'
